@@ -333,15 +333,12 @@ export default {
 		},
     HapusRecord(item) {
       let bodyData = {
-        user: {
-          jenis: 'DELETE',
-          idBiodata: item.idBiodata,
-        },
-        userdetail: {}
+        jenis: 'DELETE',
+        idBiodata: item.idBiodata,
       }
       let payload = {
 				method: "post",
-				url: `user/admin`,
+				url: `user/biodata`,
         body: bodyData,
 				authToken: localStorage.getItem('user_token')
 			};
@@ -356,16 +353,13 @@ export default {
     },
     ProsesRecord(item, jenis, kondisi) {
       let bodyData = {
-        user: {
-          jenis: jenis,
-          idBiodata: item.idBiodata,
-          kondisi: kondisi,
-        },
-        userdetail: {}
+        jenis: jenis,
+        idBiodata: item.idBiodata,
+        kondisi: kondisi,
       }
       let payload = {
 				method: "post",
-				url: `user/admin`,
+				url: `user/biodata`,
         body: bodyData,
 				authToken: localStorage.getItem('user_token')
 			};

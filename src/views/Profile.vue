@@ -382,7 +382,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 import PdfCetakan from './Layout/PdfCetakan.vue';
 import { Cropper, CircleStencil, RectangleStencil } from 'vue-advanced-cropper'
