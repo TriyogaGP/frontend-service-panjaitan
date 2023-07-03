@@ -72,19 +72,15 @@ export default {
     this.getData();
   },  
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getDashboard"]),
     getData() {
-			let payload = {
-				method: "get",
-				url: `user/dashboard`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('getDashboard')
+      .then((res) => {
 				this.dataDashboard = res.data.result;
 			})
 			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "2")
+        // this.notifikasi("error", err.response.data.message, "2")
+        console.log(err.response.data.message);
 			});
 		},
     goToProses(){
@@ -94,11 +90,6 @@ export default {
 			localStorage.removeItem('idLogin');
 			localStorage.removeItem('roleID');
 			localStorage.removeItem('fotoProfil');
-			localStorage.removeItem('jabatan_guru');
-			localStorage.removeItem('mengajar_bidang');
-			localStorage.removeItem('mengajar_kelas');
-			localStorage.removeItem('wali_kelas');
-			localStorage.removeItem('kelas');
 			this.$router.push({name: "Login"});
 		},
     notifikasi(kode, text, proses){

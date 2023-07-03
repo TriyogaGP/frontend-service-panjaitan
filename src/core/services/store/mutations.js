@@ -24,10 +24,35 @@ export const SET_WILAYAH = (state, data) => {
 	}
 }
 
+export const SET_ADMIN = (state, data) => {
+	state.DataAdministrator = data
+}
+
 export const SET_ADMINBY = (state, data) => {
 	state.dataAdministrator = data
 }
 
+export const SET_BIODATA = (state, data) => {
+	state.DataBiodata = data
+}
+
 export const SET_BIODATABY = (state, data) => {
 	state.dataBiodata = data
+}
+
+export const SET_PROFILE = (state, data) => {
+	state.dataProfil = data
+}
+
+export const SET_DASHBOARD = (state, data) => {
+	state.DataDashboard = data
+}
+
+
+//------------------------------------------------------------//
+export const SET_UID = (state, data) => {
+	state.dataUID = data
+}
+export const SET_LOADINGTABLE = (state, data) => {
+	state.loadingTable = data
 }

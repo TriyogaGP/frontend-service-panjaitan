@@ -89,7 +89,7 @@
 								color="light-black darken-3"
 								hide-details
 								:clearable="kondisi !== 'DETAIL' ? true : false"
-						:readonly="kondisi !== 'DETAIL' ? false : true"
+								:readonly="kondisi !== 'DETAIL' ? false : true"
 							/>
 						</v-col>
 						<v-col
@@ -476,7 +476,7 @@
 								color="light-black darken-3"
 								hide-details
 								:clearable="kondisi !== 'DETAIL' ? true : false"
-						:readonly="kondisi !== 'DETAIL' ? false : true"
+								:readonly="kondisi !== 'DETAIL' ? false : true"
 							/>
 						</v-col>
 					</v-row>
@@ -491,7 +491,7 @@
 								color="light-black darken-3"
 								hide-details
 								:clearable="kondisi !== 'DETAIL' ? true : false"
-						:readonly="kondisi !== 'DETAIL' ? false : true"
+								:readonly="kondisi !== 'DETAIL' ? false : true"
 							/>
 						</v-col>
 					</v-row>
@@ -506,7 +506,7 @@
 								color="light-black darken-3"
 								hide-details
 								:clearable="kondisi !== 'DETAIL' ? true : false"
-						:readonly="kondisi !== 'DETAIL' ? false : true"
+								:readonly="kondisi !== 'DETAIL' ? false : true"
 							/>
 						</v-col>
 					</v-row>
@@ -521,7 +521,7 @@
 								color="light-black darken-3"
 								hide-details
 								:clearable="kondisi !== 'DETAIL' ? true : false"
-						:readonly="kondisi !== 'DETAIL' ? false : true"
+								:readonly="kondisi !== 'DETAIL' ? false : true"
 							/>
 						</v-col>
 					</v-row>
@@ -536,7 +536,7 @@
 								color="light-black darken-3"
 								hide-details
 								:clearable="kondisi !== 'DETAIL' ? true : false"
-						:readonly="kondisi !== 'DETAIL' ? false : true"
+								:readonly="kondisi !== 'DETAIL' ? false : true"
 							/>
 						</v-col>
 					</v-row>
@@ -582,6 +582,7 @@
 					class="pt-3"
 				>
 					<v-autocomplete
+						v-if="wilayahAdmin.kodeWilayah === '00'"
 						v-model="inputData.wilayah"
 						:items="wilayahpanjaitanOptions"
 						item-text="label"
@@ -594,6 +595,17 @@
 						hide-details
 						:clearable="kondisi !== 'DETAIL' ? true : false"
 						:readonly="kondisi !== 'DETAIL' ? false : true"
+					/>
+					<v-text-field
+						v-else
+						:value="`${wilayahAdmin.namaWilayah} - (${wilayahAdmin.kodeWilayah})`"						
+						placeholder="Nama Ketua Komisaris"
+						outlined
+						dense
+						label="Nama Ketua Komisaris"
+						color="light-black darken-3"
+						hide-details
+						readonly
 					/>
 				</v-col>
 			</v-row>
@@ -925,7 +937,14 @@ export default {
 			'KecamatanOptions',
 			'KelurahanOptions',
 		]),
-    ...mapGetters(['biodata']),
+    ...mapGetters(['biodata', 'profile']),
+		wilayahAdmin(){
+			let wilayah = {
+				kodeWilayah: this.profile ? this.profile.kodeWilayah : '00',
+				namaWilayah: this.profile ? this.profile.namaWilayah : 'tidak memiliki wilayah',
+			}
+			return wilayah
+		}
   },
   watch: {
 		inputData: {
@@ -950,6 +969,7 @@ export default {
   mounted() {
     this.inputData.idBiodata = this.$route.params.uid;
     this.kondisi = this.$route.params.kondisi;
+		this.getProfile()
     if(this.kondisi === 'EDIT' || this.kondisi === 'DETAIL'){
       this.getBiodatabyUID(this.inputData.idBiodata)
 		}
@@ -961,7 +981,7 @@ export default {
 		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
   },
 	methods: {
-		...mapActions(["fetchData", "getOmpu", "getWilayahPanjaitan", "getPekerjaan", "getWilayah", "getBiodatabyUID"]),
+		...mapActions(["fetchData", "getOmpu", "getWilayahPanjaitan", "getPekerjaan", "getWilayah", "getBiodatabyUID", "getProfile"]),
 		...mapActions({
       uploadFiles: "upload/uploadFiles",
     }),
@@ -1021,7 +1041,7 @@ export default {
 				pekerjaanIstriLainnya: this.inputData.pekerjaanIstriLainnya,
 				anak: this.inputData.anak,
 				jabatanPengurus: this.inputData.jabatanPengurus,
-				wilayah: this.inputData.wilayah,
+				wilayah: this.wilayahAdmin.kodeWilayah === '00' ? this.inputData.wilayah : this.wilayahAdmin.kodeWilayah,
 				komisarisWilayah: this.inputData.komisarisWilayah,
 				namaKetuaKomisaris: this.inputData.namaKetuaKomisaris,
 				ompu: this.inputData.ompu,

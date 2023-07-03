@@ -382,7 +382,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 import PdfCetakan from './Layout/PdfCetakan.vue';
 import { Cropper, CircleStencil, RectangleStencil } from 'vue-advanced-cropper'
@@ -478,6 +478,9 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    ...mapGetters(['profile']),
+  },
   watch:{
 		tab:{
 			handler(value){
@@ -503,6 +506,29 @@ export default {
         }
       }
     },
+    profile: {
+			deep: true,
+			handler(value) {
+        this.inputAdministrator = {
+          idAdmin: value.idAdmin,
+          wilayah: value.kodeWilayah,
+          nama: this.uppercaseLetterFirst2(value.nama),
+          username: value.username,
+        }
+        this.previewData = {
+          idAdmin: value.idAdmin,
+          namaRole: value.namaRole,
+          wilayah: value.namaWilayah,
+          nama: this.uppercaseLetterFirst2(value.nama),
+          username: value.username,
+          password: value.kataSandi,
+          fotoProfil: value.fotoProfil,
+        }
+
+        localStorage.setItem('nama', this.previewData.nama)
+        localStorage.setItem('fotoProfil', this.previewData.fotoProfil)
+			}
+		},
 	},
   mounted() {
     this.roleID = localStorage.getItem("roleID")
@@ -519,39 +545,8 @@ export default {
     ...mapActions({
       fetchData: "fetchData",
       uploadFiles: "upload/uploadFiles",
+      getProfile: "getProfile",
     }),
-		getProfile() {
-			let payload = {
-				method: "put",
-				url: `auth/profile`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				let data = res.data.result;
-        this.inputAdministrator = {
-          idAdmin: data.idAdmin,
-          wilayah: data.kodeWilayah,
-          nama: this.uppercaseLetterFirst2(data.nama),
-          username: data.username,
-        }
-        this.previewData = {
-          idAdmin: data.idAdmin,
-          namaRole: data.namaRole,
-          wilayah: data.namaWilayah,
-          nama: this.uppercaseLetterFirst2(data.nama),
-          username: data.username,
-          password: data.kataSandi,
-          fotoProfil: data.fotoProfil,
-        }
-
-        localStorage.setItem('nama', this.previewData.nama)
-        localStorage.setItem('fotoProfil', this.previewData.fotoProfil)
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
     SimpanDataProfile(){
       let bodyData = {
         wilayah: this.inputAdministrator.wilayah,

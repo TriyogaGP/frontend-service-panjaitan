@@ -139,9 +139,19 @@ export default {
 		this.fotoProfil = localStorage.getItem('fotoProfil')
 		this.nama = localStorage.getItem('nama')
 		this.roleID = localStorage.getItem('roleID')
+		this.getDataAuth()
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getAuthToken"]),
+		getDataAuth() {
+      this.$store.dispatch('getAuthToken')
+      .then((res) => {
+				console.log(res.data.result);
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "2")
+			});
+		},
 		keluar() {
 			this.notifikasi("question", "Apakah anda yakin ingin keluar ?", "2")
 		},
@@ -152,11 +162,6 @@ export default {
 			localStorage.removeItem('idLogin');
 			localStorage.removeItem('roleID');
 			localStorage.removeItem('fotoProfil');
-			localStorage.removeItem('jabatan_guru');
-			localStorage.removeItem('mengajar_bidang');
-			localStorage.removeItem('mengajar_kelas');
-			localStorage.removeItem('wali_kelas');
-			localStorage.removeItem('kelas');
 			this.$router.push({name: "Login"});
 		},
 		notifikasi(kode, text, proses){

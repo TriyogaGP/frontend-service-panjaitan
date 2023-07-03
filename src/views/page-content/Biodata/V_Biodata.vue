@@ -10,7 +10,7 @@
             dense
             depressed
             class="ma-2 white--text text--darken-2"
-            @click="gotoForm()"
+            @click="getUID"
           >
             <v-icon small>add</v-icon>&nbsp;Tambah
           </v-btn>
@@ -54,7 +54,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingTable"
           :items="DataBiodata"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
@@ -199,7 +199,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataBiodata',
@@ -207,7 +207,6 @@ export default {
     PopUpNotifikasiVue
   },
   data: () => ({
-    isLoading: false,
 		DataBiodata: [],
     expanded: [],
     singleExpand: true,
@@ -262,75 +261,54 @@ export default {
 			lang: "id",
 			amp: true,
 		},
-	},
+	},computed: {
+    ...mapGetters(['databiodata', 'UID']),
+    ...mapState(['loadingTable']),
+  },
   watch: {
+    UID: {
+			deep: true,
+			handler(value) {
+        this.$router.push({name: "FormulirBiodata", params: { kondisi: 'ADD', uid: value }});
+      }
+    },
+    databiodata: {
+			deep: true,
+			handler(value) {
+        this.DataBiodata = value.records
+        this.pageSummary = {
+          page: this.DataBiodata.length ? value.pageSummary.page : 0,
+          limit: this.DataBiodata.length ? value.pageSummary.limit : 0,
+          total: this.DataBiodata.length ? value.pageSummary.total : 0,
+          totalPages: this.DataBiodata.length ? value.pageSummary.totalPages : 0
+        }
+        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
+          this.pageOptions.push({ value: index })
+        }
+			}
+		},
     page: {
 			deep: true,
 			handler(value) {
-				this.getBiodata(value, this.limit, this.searchData)
+        this.DataBiodata = []
+				this.getBiodata({page: value, limit: this.limit, keyword: this.searchData})
 			}
 		},
     limit: {
-			deep: true,
+      deep: true,
 			handler(value) {
-				this.getBiodata(1, value, this.searchData)
+        this.DataBiodata = []
+				this.getBiodata({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')
     this.idLog = localStorage.getItem('idLogin')
-		this.getBiodata(this.page, this.limit, this.searchData);
+		this.getBiodata({page: this.page, limit: this.limit, keyword: this.searchData});
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getBiodata(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataBiodata = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `user/biodata?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataBiodata = resdata.records
-				this.pageSummary = {
-					page: this.DataBiodata.length ? resdata.pageSummary.page : 0,
-					limit: this.DataBiodata.length ? resdata.pageSummary.limit : 0,
-					total: this.DataBiodata.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataBiodata.length ? resdata.pageSummary.totalPages : 0
-				}
-        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
-          this.pageOptions.push({ value: index })
-        }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataBiodata = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "2")
-			});
-		},
+		...mapActions(["fetchData", "getBiodata", "getUID"]),
     HapusRecord(item) {
       let bodyData = {
         jenis: 'DELETE',
@@ -344,7 +322,7 @@ export default {
 			};
 			this.fetchData(payload)
 			.then((res) => {
-        this.getBiodata(1, this.limit, this.searchData)
+        this.getBiodata({page: 1, limit: this.limit, keyword: this.searchData})
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
@@ -365,26 +343,11 @@ export default {
 			};
 			this.fetchData(payload)
 			.then((res) => {
-        this.getBiodata(1, this.limit, this.searchData)
+        this.getBiodata({page: 1, limit: this.limit, keyword: this.searchData})
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
 				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    gotoForm(){
-      let payload = {
-        method: "get",
-				url: `settings/getUID`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-        this.$router.push({name: "FormulirBiodata", params: { kondisi: 'ADD', uid: resdata }});
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     FData(kondisi, uid){
@@ -397,11 +360,6 @@ export default {
 			localStorage.removeItem('idLogin');
 			localStorage.removeItem('roleID');
 			localStorage.removeItem('fotoProfil');
-			localStorage.removeItem('jabatan_guru');
-			localStorage.removeItem('mengajar_bidang');
-			localStorage.removeItem('mengajar_kelas');
-			localStorage.removeItem('wali_kelas');
-			localStorage.removeItem('kelas');
 			this.$router.push({name: "Login"});
 		},
     notifikasi(kode, text, proses){

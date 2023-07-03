@@ -7,6 +7,13 @@ export default {
   KecamatanOptions: [],
   KelurahanOptions: [],
   KabKotaOnlyOptions: [],
+  DataAdministrator: [],
   dataAdministrator: null,
+  DataBiodata: [],
   dataBiodata: null,
+  DataDashboard: [],
+  dataProfil: null,
+  dataUID: null,
+
+  loadingTable: false
 }

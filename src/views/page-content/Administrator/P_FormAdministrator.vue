@@ -36,7 +36,7 @@
 					/>
 				</v-col>
 			</v-row>
-			<v-row no-gutters>
+			<v-row no-gutters v-if="inputData.consumerType === 3">
 				<v-col
 					cols="12"
 					md="4"
@@ -299,7 +299,7 @@ export default {
         jenis: this.kondisi,
         idAdmin: this.inputData.idAdmin,
         consumerType: this.inputData.consumerType,
-        wilayah: this.inputData.wilayah,
+        wilayah: this.inputData.consumerType === 3 ? this.inputData.wilayah : '00',
         nama: this.inputData.nama,
         username: this.inputData.username,
         password: this.inputData.password,

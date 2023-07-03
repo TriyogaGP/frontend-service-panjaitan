@@ -36,11 +36,39 @@ export const getWilayah = async ({ commit }, data) => {
 	}
 }
 
+export const getAdmin = async ({ commit }, data) => {
+	try {
+		commit('SET_LOADINGTABLE', true)
+		let res = await ApiService.get(`user/admin?page=${data.page}&limit=${data.limit}${data.keyword ? `&keyword=${data.keyword}` : ''}`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		setTimeout(() => {
+			commit('SET_ADMIN', res.data.result)
+			commit('SET_LOADINGTABLE', false)
+		}, 2000);
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 export const getAdminbyUID = async ({ commit }, uid) => {
 	try {
 		let res = await ApiService.get(`user/admin/${uid}`, localStorage.getItem('user_token'));
 		// console.log(res.data.result);
 		commit('SET_ADMINBY', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export const getBiodata = async ({ commit }, data) => {
+	try {
+		commit('SET_LOADINGTABLE', true)
+		let res = await ApiService.get(`user/biodata?page=${data.page}&limit=${data.limit}${data.keyword ? `&keyword=${data.keyword}` : ''}`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		setTimeout(() => {
+			commit('SET_BIODATA', res.data.result)
+			commit('SET_LOADINGTABLE', false)
+		}, 2000);
 	} catch (error) {
 		console.log(error);
 	}
@@ -54,4 +82,49 @@ export const getBiodatabyUID = async ({ commit }, uid) => {
 	} catch (error) {
 		console.log(error);
 	}
+}
+
+export const getUID = async ({ commit }) => {
+	try {
+		let res = await ApiService.get(`settings/getUID`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		commit('SET_UID', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export const getProfile = async ({ commit }) => {
+	try {
+		let res = await ApiService.put(`auth/profile`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		commit('SET_PROFILE', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export const getDashboard = (context) => {
+	return new Promise((resolve, reject) => {
+		ApiService.get(`user/dashboard`, localStorage.getItem('user_token'))
+			.then((response) => {
+				// console.log(response.data.result);
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			})
+	});
+}
+
+export const getAuthToken = (context) => {
+	return new Promise((resolve, reject) => {
+		ApiService.get(`auth/authToken`, localStorage.getItem('user_token'))
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			})
+	});
 }
